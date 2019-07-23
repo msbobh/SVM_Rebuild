@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using libsvm;
 using mystrings;
 using Functions;
+using libsvm;
 
 namespace TrainSVM
 {
@@ -98,11 +94,8 @@ namespace TrainSVM
 
                         default:
 
-                            needsFormatting = HelperFunctions.CheckFormat(args[1]);
-                            inputmatrix = args[1];
-                            labelfile = args[2];
-                            testfile = args[3];
                             Console.WriteLine("too many parameters");
+                            Console.WriteLine(MyStrings.usage);
                             System.Environment.Exit(1);
                             break;
                     }
@@ -110,30 +103,27 @@ namespace TrainSVM
                 }
                 
             }
+            savefilename = inputmatrix.Replace(".mat", ".svm"); // update the suffix
             if (!done && needsFormatting && args.Length >= 2)
             {
                 inputmatrix = args[1];
                 labelfile = args[2];
                 vectorlength = HelperFunctions.VectorLength(inputmatrix); // Get the number of features
                 string[] labels = new string[HelperFunctions.SampleSize(labelfile)]; // Calculate the number of labels and use to create storage
-                savefilename = inputmatrix.Replace(".mat", ".svm"); // update the suffix
+                
+                /* if the input matrix is not already in the correct format Call reformat function
+                * result is that a file is written that is the LIBSVM format, expects the 
+                * labels to be in a separate file
+                *
+                * Reformatdata(string[] data, string labels, string fname)
+                * 
+                */
+
                 HelperFunctions.Reformatdata(inputmatrix, labels, savefilename, vectorlength);
 
             }
-            
-            
-            // latest and greatest 7/20
-           
-               
-            }
-            /* if the input matrix is not already in the correct format Call reformat function
-             * result is that a file is written that is the LIBSVM format, expects the 
-             * lables to be in a separate file
-             *
-             * Reformatdata(string[] data, string labels, string fname)
-             * 
-            */
-           
+
+
             // Train the SVM
 
             /* "." means every 1,000 iterations (or every #data iterations is your #data is less than 1,000).
@@ -157,7 +147,10 @@ namespace TrainSVM
              * 4 = precomputed
              */
 
-            
+            // 7/23/19 fix up save file name, kernelchoice does not seem to be in the rigth place, also logic flow thru above switch and if statements needs some review
+
+            Int32.TryParse(args[0], out kernelchoice);
+
             
             if (kernelparam)
             {
@@ -206,13 +199,6 @@ namespace TrainSVM
 
         }
 
-
         
-
-
-
-
-
-
     }
 }
