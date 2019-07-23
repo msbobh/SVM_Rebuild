@@ -3,6 +3,7 @@ using System.IO;
 using mystrings;
 using Functions;
 using libsvm;
+using System.Collections;
 
 namespace TrainSVM
 {
@@ -20,7 +21,8 @@ namespace TrainSVM
             int vectorlength; // number of features
             int kernelchoice; // integer representation of selected kernel
             int numberofArgs = args.Length;
-            string inputmatrix, savefilename, labelfile;
+            string inputmatrix, labelfile;
+            string savefilename = null;
             string path = Directory.GetCurrentDirectory();
             string save_model_name;
             string kerneltype;
@@ -48,7 +50,8 @@ namespace TrainSVM
                 Console.WriteLine(MyStrings.usage); // single paramater can't be int
                 System.Environment.Exit(1);
              }
-            else // Assume file name and check if it needs formatting, if not we are good to train and save the model
+            else 
+            if (numberofArgs == 1) // Assume the only argument is the file name and check if it needs formatting, if no reformat is requied we can train and save the model
             {
                 kernelparam = false;
                 properformat = HelperFunctions.CheckFormat(args[0]);
@@ -70,7 +73,7 @@ namespace TrainSVM
                     switch (numberofArgs)
                     {
                         case 2:
-                            needsFormatting = HelperFunctions.CheckFormat(args[1]);
+                            needsFormatting = !HelperFunctions.CheckFormat(args[1]);
                             inputmatrix = args[1];
                             if (needsFormatting)
                             {
@@ -103,14 +106,20 @@ namespace TrainSVM
                 }
                 
             }
-            savefilename = inputmatrix.Replace(".mat", ".svm"); // update the suffix
+            // *********************** not sure taht i need this
+            inputmatrix = args[1];
+            if (inputmatrix.Contains(".mat"))
+            {
+                savefilename = inputmatrix.Replace(".mat", ".svm"); // update the suffix
+            }
+            
             if (!done && needsFormatting && args.Length >= 2)
             {
                 inputmatrix = args[1];
                 labelfile = args[2];
                 vectorlength = HelperFunctions.VectorLength(inputmatrix); // Get the number of features
                 string[] labels = new string[HelperFunctions.SampleSize(labelfile)]; // Calculate the number of labels and use to create storage
-                
+
                 /* if the input matrix is not already in the correct format Call reformat function
                 * result is that a file is written that is the LIBSVM format, expects the 
                 * labels to be in a separate file
@@ -118,7 +127,7 @@ namespace TrainSVM
                 * Reformatdata(string[] data, string labels, string fname)
                 * 
                 */
-
+                savefilename = String.Concat(inputmatrix, ".svm");
                 HelperFunctions.Reformatdata(inputmatrix, labels, savefilename, vectorlength);
 
             }
@@ -150,8 +159,12 @@ namespace TrainSVM
             // 7/23/19 fix up save file name, kernelchoice does not seem to be in the rigth place, also logic flow thru above switch and if statements needs some review
 
             Int32.TryParse(args[0], out kernelchoice);
+            if (!savefilename.Contains("*.svm"))
+            {
+                savefilename = String.Concat(inputmatrix, ".svm");
+            }
 
-            
+
             if (kernelparam)
             {
                 int caseSwitch = kernelchoice;
