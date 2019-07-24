@@ -15,7 +15,6 @@ namespace TrainSVM
             
 
             bool kernelparam = false;
-            bool properformat = false;
             bool needsFormatting = false;
             bool done = false;
             int vectorlength; // number of features
@@ -96,7 +95,7 @@ namespace TrainSVM
                         {
                             inputmatrix = args[1];
                             labelfile = args[2];
-                            testfile = args[3]
+                            testfile = args[3];
                         }
                         else
                         {
@@ -111,86 +110,27 @@ namespace TrainSVM
                 inputmatrix = args[0];
             else
                 inputmatrix = args[1];
-            // stopped here on Tuesday evening 7/23
-            /*
-             * **********************************
-             * bunch of stuff that does not work well below this
-             * **********************************
-             */
+               
 
-            
-                if (numberofArgs < 1 )
+            // Single parameter, file that is in format and can train
+            if (!kernelparam && numberofArgs == 1 && !needsFormatting) // Already fomatted and can be trained
             {
-                Console.WriteLine(MyStrings.usage);
-                System.Environment.Exit(1);
-            } // Exit if no params passed on the command line
 
-            /* At least one command line parameter we can continue, but it can't be an int.
-             * so check for that next.
-             */
-            if (numberofArgs == 1 && Int32.TryParse(args[0], out kernelchoice))
-             {
-                Console.WriteLine(MyStrings.usage); // single paramater can't be int
-                System.Environment.Exit(1);
-             }
-            else 
-            if (numberofArgs == 1) // Assume the only argument is the file name and check if it needs formatting, if no reformat is requied we can train and save the model
-            {
-                kernelparam = false;
-                properformat = HelperFunctions.CheckFormat(args[0]);
-                inputmatrix = args[0];
-                savefilename = inputmatrix.Replace(".mat", ".svm"); // update the suffix
+                savefilename = inputmatrix; // don't need to change the name  the suffix
                 svm = new C_SVC(savefilename, KernelHelper.LinearKernel(), C);
-                save_model_name = savefilename.Replace(".svm", ".model");
+                save_model_name = String.Concat(savefilename,".model");
                 svm.Export(save_model_name);
                 done = true;
 
             }
 
-            if (numberofArgs >= 1)
-            {
-                if (Int32.TryParse(args[0], out kernelchoice))
-                {
-                    kernelparam = true;
+            // Two parameters case 1 no kernel train and label or kernel and informat train
+            if ()
 
-                    switch (numberofArgs)
-                    {
-                        case 2:
-                            needsFormatting = !HelperFunctions.CheckFormat(args[1]);
-                            inputmatrix = args[1];
-                            if (needsFormatting)
-                            {
-                                Console.WriteLine("Missing label file");
-                                System.Environment.Exit(1);
-                            }
-                            break;
+                    // stopped here on Tuesday evening 7/23
 
-                        case 3:
-                            needsFormatting = HelperFunctions.CheckFormat(args[1]);
-                            inputmatrix = args[1];
-                            labelfile = args[2];
-                            break;
-
-                        case 4:
-                            needsFormatting = HelperFunctions.CheckFormat(args[1]);
-                            inputmatrix = args[1];
-                            labelfile = args[2];
-                            testfile = args[3];
-                            break;
-
-                        default:
-
-                            Console.WriteLine("too many parameters");
-                            Console.WriteLine(MyStrings.usage);
-                            System.Environment.Exit(1);
-                            break;
-                    }
-
-                }
-                
-            }
             // *********************** not sure taht i need this
-            inputmatrix = args[1];
+                    inputmatrix = args[1];
             if (inputmatrix.Contains(".mat"))
             {
                 savefilename = inputmatrix.Replace(".mat", ".svm"); // update the suffix
