@@ -36,7 +36,90 @@ namespace TrainSVM
             double gamma = 0.001953125; // used for Radial Basis Function Kernel (RBF)
             C_SVC svm; // setup the default variable for the SVM
 
-            if (numberofArgs < 1 )
+            // lets see if we have a kernel param
+            if (kernelparam = Int32.TryParse(args[0], out kernelchoice))
+            {
+                //Legal value for kernelchoice are 0-3
+                if (kernelchoice > 3)
+                {
+                    Console.WriteLine(MyStrings.usage);
+                    System.Environment.Exit(1);
+                }
+                    
+            if (kernelparam && numberofArgs == 1)
+            {
+                // Not a legal command line
+                Console.WriteLine(MyStrings.usage);
+                System.Environment.Exit(1);
+
+            }
+            switch (numberofArgs)
+            {
+                case 1:
+                    needsFormatting = HelperFunctions.CheckFormat(args[0]);
+                    if (needsFormatting)
+                    {
+                        Console.WriteLine(MyStrings.usage);
+                        System.Environment.Exit(1);
+                    }
+                    break;
+
+                case 2:
+                    needsFormatting = HelperFunctions.CheckFormat(args[1]);
+                    if (kernelparam && needsFormatting)
+                    {
+                        Console.WriteLine(MyStrings.usage);
+                        System.Environment.Exit(1);
+                    }
+                    else
+                    {
+                        inputmatrix = args[1];
+                        
+                    }
+                    break;
+
+                case 3:
+                        if (kernelparam && (needsFormatting = HelperFunctions.CheckFormat(args[1])))
+                        {
+                            inputmatrix = args[1];
+                            labelfile = args[2];
+                        }
+                        else
+                        {
+                            inputmatrix = args[1];
+                            testfile = args[2];
+                        }
+                        break;
+
+                    case 4: // kernel matrix labels training or kernel matrix training
+                        if (needsFormatting = HelperFunctions.CheckFormat(args[1]))
+                        {
+                            inputmatrix = args[1];
+                            labelfile = args[2];
+                            testfile = args[3]
+                        }
+                        else
+                        {
+                            Console.WriteLine(MyStrings.usage);
+                            System.Environment.Exit(1);
+                        }
+
+                        break;
+
+            }
+            if (numberofArgs == 1)
+                inputmatrix = args[0];
+            else
+                inputmatrix = args[1];
+            // stopped here on Tuesday evening 7/23
+            /*
+             * **********************************
+             * bunch of stuff that does not work well below this
+             * **********************************
+             */
+
+            
+                if (numberofArgs < 1 )
             {
                 Console.WriteLine(MyStrings.usage);
                 System.Environment.Exit(1);
@@ -152,7 +235,7 @@ namespace TrainSVM
              * 0 = linear
              * 1 = polynomial
              * 2 = RBF
-             * 3 = sigmoind
+             * 3 = sigmoid
              * 4 = precomputed
              */
 
