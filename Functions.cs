@@ -1,58 +1,13 @@
 ﻿using System;
 using System.IO;
 using mystrings;
+using libsvm;
 
 namespace Functions
 {
     class HelperFunctions
     {
-        static public void Reformatdata(string matrix, string[] labels, string fname, int vectorlength)
-        
-        /* The pair <index>:<value> gives a feature (attribute) value: <index> is
-           an integer starting from 1 and <value> is a real number. The only
-           exception is the precomputed kernel, where <index> starts from 0; see
-           the section of precomputed kernels. Indices must be in ASCENDING
-           order.*/
-        {
-            // Local variables
-            int labelindex = 0;
-            string[] data = new string[vectorlength - 1];
-            string[] build = new string[vectorlength];
-            string compressed; // used to hold the vector after stripping out the spaces
-            data = File.ReadAllLines(matrix); // Read in training data
-
-            // Create the output file
-            StreamWriter outfile = null;
-            try { outfile = new StreamWriter(fname); }
-            catch (Exception e)
-            {
-                Console.WriteLine(MyStrings.File_error, e);
-                System.Environment.Exit(0);
-            }
-
-            foreach (var row in data)   // Process one row at a time
-            {
-                if (labels[labelindex] == "0")  // LibSVM maps 0's to -1 and 1's to 1
-                {
-                    outfile.Write("-1 ");
-                }
-                else
-                {
-                    outfile.Write("1 ");
-                }
-                // Write out the label at the beginning of the row, then strip out spaces and reduce the vector by a factor of 2
-                for (int i = 1; i <= (vectorlength - 1) / 2; i++)
-                {
-                    compressed = row.Replace(" ", "");
-                    outfile.Write("{0}:{1} ", i, compressed[i]); // step through the row and add index and ":"
-                }
-                outfile.WriteLine();
-                labelindex++;
-
-            }
-            outfile.Close();
-            return;
-        } // Done procecssing rows
+        // Done procecssing rows
 
         static public int SampleSize(string fname)
         {
@@ -70,16 +25,7 @@ namespace Functions
         }
 
         
-        static public int VectorLength(string vectorfile)
-        {
-            /* Get the size of the feature vector from the data so we can set it automatically */
-            string line;
-            int Count = 0;
-            StreamReader file = new StreamReader(vectorfile);
-            line = file.ReadLine();
-            Count = line.Length / 2; // Length returns the number of spaces as well as ints
-            return (Count);
-        }
+        
 
         static public string CommandLineParams(string[] args)
         {
@@ -137,6 +83,31 @@ namespace Functions
 
             return SVMFormat;
         }
-        
+
+        static public double PredictTestSet(string inputfile, C_SVC svm)
+        {
+            /* Given a test set "Inputfile" and previoulsy trained SVM calculates the accuracty of the
+             * the trained SVM. Fucntion returns the percent correct.
+             */
+
+            int i;
+            double total = 1;
+            var predfile = ProblemHelper.ReadProblem(inputfile); // Reads in the SVM format file and results in a svm_problem format
+            double expectedValue = 0;
+
+            for (i = 0; i < predfile.l; i++)
+            {
+                var x = predfile.x[i];                  // x is the ith vector sample
+                expectedValue = predfile.y[i];
+                var predictedValue = svm.Predict(x);    // Make label prediciton 
+                if (predictedValue == expectedValue)    // Compare the prediction with actual 
+                {
+                    total++;
+                }
+            }
+            double result = ((double)total / (double)i);    // Calculate the accuracy and return
+            return result;
+        }
+
     }
 }
