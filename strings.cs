@@ -16,6 +16,8 @@ namespace mystrings
         public const string Polynomial = "Polynomial";
         public const string RBF = "RBF";
         public const string Sigmoid = "Sigmoid";
+        public const string Parameters = "C = {0}, Gamma = {1}, Degree = {2}, r = {3}";
+        public const string TrainingFileFormat = "Training file {0} is not in the correct format";
 
     }
    

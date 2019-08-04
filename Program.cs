@@ -14,7 +14,6 @@ namespace TrainSVM
         {
 
             bool kernelparam = false;
-            int kernelchoice; // integer representation of selected kernel
             int numberofArgs = args.Length;
             string inputmatrix;
             string path = Directory.GetCurrentDirectory();
@@ -30,8 +29,8 @@ namespace TrainSVM
             double gamma = 0.001953125; // used for Radial Basis Function Kernel (RBF)
             C_SVC svm; // setup the default variable for the SVM
 
-            /* Three parameters are required, kernel seleciton, training file and test file
-             * 
+            /* 
+             * Three parameters are required, kernel selection, training file and test file
              */
 
             if (args.Length != 3)
@@ -40,7 +39,7 @@ namespace TrainSVM
                 System.Environment.Exit(1);
             }
 
-            if (kernelparam = Int32.TryParse(args[0], out kernelchoice)&& kernelchoice <=3)
+            if (kernelparam = Int32.TryParse(args[0], out int kernelchoice)&& kernelchoice <=3)
             {
                 //Legal value for kernelchoice are 0-3
                 //kernelchoice = 1;
@@ -53,7 +52,19 @@ namespace TrainSVM
             }
             inputmatrix = args[1];
             testfile = args[2];
-            
+            if (!HelperFunctions.CheckFormat(inputmatrix))
+            {
+                Console.WriteLine(MyStrings.TrainingFileFormat,inputmatrix);
+                System.Environment.Exit(1);
+            }
+            if (!File.Exists(testfile))
+            {
+                Console.WriteLine(MyStrings.File_error, inputmatrix);
+                System.Environment.Exit(1);
+            }
+
+            // Train the SVM
+
             switch (kernelchoice)
             {
                 case 0:
@@ -85,13 +96,13 @@ namespace TrainSVM
             double result = HelperFunctions.PredictTestSet(testfile, svm);
             
             Console.WriteLine(MyStrings.Accuracy, Math.Round(result * 100,2));
-            Console.WriteLine("SVM kernel type {0}", kerneltype);
-
+            Console.Write("SVM kernel type {0}      ", kerneltype);
+            Console.WriteLine(MyStrings.Parameters, C, gamma, degree,r);
            
         }
 
 
-        // Train the SVM
+        
 
         /* "." means every 1,000 iterations (or every #data iterations is your #data is less than 1,000).
             "*" means that after iterations of using a smaller shrunk problem, we reset to use the whole set. */

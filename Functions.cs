@@ -27,40 +27,7 @@ namespace Functions
         
         
 
-        static public string CommandLineParams(string[] args)
-        {
-            string kernelchoice;
-            int kernelSpecifier = 2;
-            bool option = false;
-
-            if( args.Length <= 4) { return "none"; } // 5 means no kernel choice
-            else
-            if (args.Length == 4)
-            {
-                option = true; // must specify train, label test file
-            }
-            Int32.TryParse(args[0], out kernelSpecifier); // Covert string represenatin of a number intoa 32 bit int
-
-            int caseSwitch = kernelSpecifier;
-            switch (caseSwitch)
-            {
-                case 0:
-                    kernelchoice = "Linear";
-                    break;
-                case 1:
-                    kernelchoice = "Polynomial";
-                    break;
-                case 2:
-                    kernelchoice = "RBF";
-                    break;
-                default:
-                    kernelchoice = "Linear";
-                    break;
-            }
-            return kernelchoice;
-        }
-
-        static public bool CheckFormat(string filename)
+       static public bool CheckFormat(string filename)
         {
             bool SVMFormat = false;
             string[] input;
